@@ -1,0 +1,28 @@
+{
+  "name": "@mklab/swaps-client",
+  "version": "0.1.0",
+  "description": "SWAPS license validation client for Node.js — validate against your protection server",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "license",
+    "validation",
+    "swaps",
+    "protection"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -162,3 +162,23 @@ protect(
 
 - **Full integration guide:** [docs/integration-guide.md](docs/integration-guide.md)  
 - **SDK options and env:** [sdk/README.md](sdk/README.md)
+
+### Node.js SDK (npm)
+
+```bash
+npm install ./sdk-js
+```
+
+```js
+import { protect, requireValid } from '@mklab/swaps-client';
+
+protect({
+  licenseKey: 'LIC-MYAPP-...',
+  serverUrl: 'https://protection.yourserver.com',
+  signingSecret: 'same-as-server-LICENSE_HMAC_SECRET',
+  onInvalid: () => process.exit(1),
+});
+requireValid();
+```
+
+- **API and options:** [sdk-js/README.md](sdk-js/README.md)
