@@ -1,0 +1,53 @@
+# SWAPS — Development / MVP Docker Compose
+# Usage: from repo root, run: docker compose -f deploy/docker-compose.yml up -d
+# With Nginx: traffic to host:80 -> nginx -> api:8000
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: swaps
+      POSTGRES_USER: ${DB_USER:-swaps}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-swaps}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-swaps} -d swaps"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-swaps}:${DB_PASSWORD:-swaps}@db:5432/swaps
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-min-32-characters}
+      LICENSE_HMAC_SECRET: ${LICENSE_HMAC_SECRET:-dev-hmac-secret}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"   # Optional: remove in prod so only nginx is public
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    # Optional: mount certbot certs for HTTPS (see docker-compose.prod.yml)
+    # volumes:
+    #   - certbot_conf:/etc/letsencrypt:ro
+    #   - certbot_www:/var/www/certbot:ro
+
+volumes:
+  pgdata:

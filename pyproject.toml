@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "swaps"
+version = "0.1.0"
+description = "Software & Web Application Protection System — License Verification"
+authors = ["SWAPS Team"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# Server
+fastapi = "^0.115.0"
+uvicorn = { extras = ["standard"], version = "^0.32.0" }
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.36" }
+asyncpg = "^0.30.0"
+alembic = "^1.14.0"
+pydantic = "^2.10.0"
+pydantic-settings = "^2.6.0"
+email-validator = "^2.0.0"
+python-jose = { extras = ["cryptography"], version = "^3.3.0" }
+bcrypt = "^4.0.0"
+python-multipart = "^0.0.17"
+jinja2 = "^3.1.4"
+# SDK
+apscheduler = "^3.10.4"
+keyring = "^25.0.0"
+httpx = "^0.28.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
+ruff = "^0.8.0"
+httpx = "^0.28.0"
+aiosqlite = "^0.20.0"
+locust = "^2.32.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["server/tests"]
+addopts = "-v"
+# With pytest-cov installed, run: pytest server/tests --cov=server/app --cov-report=term-missing --cov-fail-under=60
+
+[tool.coverage.run]
+source = ["server/app"]
+omit = ["*/tests/*", "*/__init__.py"]

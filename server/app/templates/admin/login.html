@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login — SWAPS Admin{% endblock %}
+{% block nav %}
+<nav><a href="/admin">SWAPS Admin</a></nav>
+{% endblock %}
+{% block content %}
+<h1>Admin login</h1>
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+<form method="post" action="/admin/login">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required autocomplete="email">
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" required autocomplete="current-password">
+  <p style="margin-top:1rem;"><button type="submit" class="btn btn-primary">Log in</button></p>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+# SWAPS API — FastAPI server
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Poetry
+ENV POETRY_VERSION=1.8.3
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
+
+# Copy dependency files and Alembic (repo root = parent of deploy/)
+COPY pyproject.toml poetry.lock* alembic.ini ./
+COPY server ./server
+
+# Configure Poetry to not create virtualenv in container
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-root --no-dev
+
+# Run from server dir so `app` package resolves
+WORKDIR /app/server
+ENV PYTHONPATH=/app/server
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

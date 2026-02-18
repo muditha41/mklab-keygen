@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Validation history — {{ license.client_name }}{% endblock %}
+{% block content %}
+<h1>Validation history</h1>
+<p><strong>{{ license.app_name }}</strong> — {{ license.client_name }} (expires {{ license.expiry_date }})</p>
+<p><a href="/admin/licenses/{{ license.id }}/edit" class="btn btn-secondary">Edit license</a> <a href="/admin" class="btn btn-secondary">Back to list</a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Time (UTC)</th>
+      <th>IP address</th>
+      <th>Result</th>
+      <th>Error / detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+      <td>{{ log.validated_at.strftime('%Y-%m-%d %H:%M:%S') if log.validated_at else '—' }}</td>
+      <td>{{ log.ip_address or '—' }}</td>
+      <td><span class="badge {% if log.result == 'success' %}badge-active{% else %}badge-inactive{% endif %}">{{ log.result }}</span></td>
+      <td>{{ log.error_reason or '—' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No validation attempts yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

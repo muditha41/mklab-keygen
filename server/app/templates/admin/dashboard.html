@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Licenses — SWAPS Admin{% endblock %}
+{% block content %}
+<h1>Licenses</h1>
+
+{# Dashboard summary — Sprint 5 #}
+<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+  <div style="background:var(--card); padding:1rem; border-radius:8px;">
+    <div style="color:var(--muted); font-size:0.875rem;">Active licenses</div>
+    <div style="font-size:1.5rem; font-weight:600;">{{ active_count }}</div>
+  </div>
+  <div style="background:var(--card); padding:1rem; border-radius:8px;">
+    <div style="color:var(--muted); font-size:0.875rem;">Expiring in 30 days</div>
+    <div style="font-size:1.5rem; font-weight:600;">{{ expiring_soon|length }}</div>
+    {% if expiring_soon %}
+    <ul style="margin:0.5rem 0 0; padding-left:1.25rem; font-size:0.875rem;">
+      {% for lic in expiring_soon[:5] %}
+      <li><a href="/admin/licenses/{{ lic.id }}/edit">{{ lic.client_name }}</a> — {{ lic.expiry_date }}</li>
+      {% endfor %}
+      {% if expiring_soon|length > 5 %}<li>… and {{ expiring_soon|length - 5 }} more</li>{% endif %}
+    </ul>
+    {% endif %}
+  </div>
+  <div style="background:var(--card); padding:1rem; border-radius:8px;">
+    <div style="color:var(--muted); font-size:0.875rem;">Recent failures</div>
+    <div style="font-size:1.5rem; font-weight:600;">{{ recent_failures|length }}</div>
+    {% if recent_failures %}
+    <ul style="margin:0.5rem 0 0; padding-left:1.25rem; font-size:0.875rem;">
+      {% for log, lic in recent_failures[:5] %}
+      <li><a href="/admin/licenses/{{ lic.id }}/history">{{ lic.client_name }}</a> — {{ log.validated_at.strftime('%Y-%m-%d %H:%M') }}{% if log.error_reason %}: {{ log.error_reason }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+
+<p><a href="/admin/audit" class="btn btn-secondary">View full audit log</a> <a href="/admin/licenses/new" class="btn btn-primary">Create license</a></p>
+
+<form method="get" action="/admin/" style="margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+  <input type="text" name="client_name" placeholder="Client name" value="{{ filter_client }}" style="max-width:180px;">
+  <select name="status" style="max-width:140px;">
+    <option value="">All statuses</option>
+    <option value="active" {% if filter_status == 'active' %}selected{% endif %}>Active</option>
+    <option value="inactive" {% if filter_status == 'inactive' %}selected{% endif %}>Inactive</option>
+    <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Pending</option>
+    <option value="suspended" {% if filter_status == 'suspended' %}selected{% endif %}>Suspended</option>
+  </select>
+  <label style="margin:0; font-size:0.875rem;">Expiry from</label>
+  <input type="date" name="expiry_from" value="{{ filter_expiry_from }}" style="max-width:140px;">
+  <label style="margin:0; font-size:0.875rem;">to</label>
+  <input type="date" name="expiry_to" value="{{ filter_expiry_to }}" style="max-width:140px;">
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<p style="color:var(--muted); font-size:0.875rem; margin-bottom:0.5rem;">Full license key is shown only once when creating a license. Table shows a key reference (last 8 chars of key hash) for identification.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Key ref</th>
+      <th>Application</th>
+      <th>Client</th>
+      <th>Expiry</th>
+      <th>Status</th>
+      <th>Monthly renewal</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for lic in licenses %}
+    <tr>
+      <td><code title="License key hash ref">{{ lic.license_key_hash[-8:] }}</code></td>
+      <td>{{ lic.app_name }}</td>
+      <td>{{ lic.client_name }}</td>
+      <td>{{ lic.expiry_date }}</td>
+      <td><span class="badge badge-{{ lic.status }}">{{ lic.status }}</span></td>
+      <td>{{ 'Yes' if lic.monthly_renewal else 'No' }}</td>
+      <td>
+        <a href="/admin/licenses/{{ lic.id }}/history" class="btn btn-secondary">History</a>
+        <a href="/admin/licenses/{{ lic.id }}/edit" class="btn btn-secondary">Edit</a>
+        {% if lic.status != 'inactive' %}
+        <form method="post" action="/admin/licenses/{{ lic.id }}/deactivate" style="display:inline;" onsubmit="return confirm('Deactivate this license?');">
+          <button type="submit" class="btn btn-danger">Deactivate</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7">No licenses match the filters. <a href="/admin/licenses/new">Create one</a>.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

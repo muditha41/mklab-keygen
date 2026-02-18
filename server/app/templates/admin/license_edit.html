@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Edit license — SWAPS Admin{% endblock %}
+{% block content %}
+<h1>Edit license</h1>
+<form method="post" action="/admin/licenses/{{ license.id }}/edit">
+  <label for="app_name">Application name</label>
+  <input id="app_name" name="app_name" type="text" required value="{{ license.app_name }}">
+  <label for="client_name">Client name</label>
+  <input id="client_name" name="client_name" type="text" required value="{{ license.client_name }}">
+  <label for="expiry_date">Expiry date</label>
+  <input id="expiry_date" name="expiry_date" type="date" required value="{{ license.expiry_date }}">
+  <label for="status">Status</label>
+  <select id="status" name="status">
+    <option value="pending" {% if license.status == 'pending' %}selected{% endif %}>Pending</option>
+    <option value="active" {% if license.status == 'active' %}selected{% endif %}>Active</option>
+    <option value="inactive" {% if license.status == 'inactive' %}selected{% endif %}>Inactive</option>
+    <option value="suspended" {% if license.status == 'suspended' %}selected{% endif %}>Suspended</option>
+  </select>
+  <label style="display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem;">
+    <input type="checkbox" name="monthly_renewal" value="on" {% if license.monthly_renewal %}checked{% endif %}>
+    Monthly renewal (validate on 26th)
+  </label>
+  <p style="margin-top:1rem;">
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="/admin" class="btn btn-secondary">Back to list</a>
+  </p>
+</form>
+{% endblock %}

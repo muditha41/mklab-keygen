@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SWAPS Admin{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --danger: #f87171; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; line-height: 1.5; }
+    .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+    nav { background: var(--card); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    nav a { color: var(--accent); text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #334155; }
+    th { color: var(--muted); font-weight: 600; }
+    .btn { display: inline-block; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.875rem; cursor: pointer; border: none; }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-secondary { background: #334155; color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    form label { display: block; margin-top: 0.75rem; color: var(--muted); font-size: 0.875rem; }
+    form input, form select { width: 100%; max-width: 320px; padding: 0.5rem; margin-top: 0.25rem; background: var(--card); border: 1px solid #334155; border-radius: 6px; color: var(--text); }
+    form input[type="checkbox"] { width: auto; max-width: none; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+    .alert-error { background: #7f1d1d; color: #fecaca; }
+    .alert-success { background: #14532d; color: #bbf7d0; }
+    .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+    .badge-active { background: #14532d; } .badge-inactive { background: #7f1d1d; } .badge-pending { background: #713f12; } .badge-suspended { background: #4c1d95; }
+  </style>
+</head>
+<body>
+  {% block nav %}
+  <nav>
+    <a href="/admin">SWAPS Admin</a>
+    {% if admin %}
+    <span style="display:flex; align-items:center; gap:1rem;">
+      <a href="/admin/audit">Audit log</a>
+      {{ admin.email }}
+      <form method="post" action="/admin/logout" style="display:inline;"><button type="submit" class="btn btn-secondary">Log out</button></form>
+    </span>
+    {% endif %}
+  </nav>
+  {% endblock %}
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Create license — SWAPS Admin{% endblock %}
+{% block content %}
+<h1>Create license</h1>
+{% if message %}
+<div class="alert alert-success">{{ message }}</div>
+{% endif %}
+{% if created_key %}
+<div class="alert alert-success">
+  <strong>New license key (copy now — shown once):</strong><br>
+  <code style="word-break:break-all; display:block; margin-top:0.5rem;">{{ created_key }}</code>
+</div>
+{% endif %}
+<form method="post" action="/admin/licenses/new">
+  <label for="app_name">Application name</label>
+  <input id="app_name" name="app_name" type="text" required placeholder="e.g. MyApp">
+  <label for="client_name">Client name</label>
+  <input id="client_name" name="client_name" type="text" required placeholder="e.g. Acme Corp">
+  <label for="expiry_date">Expiry date</label>
+  <input id="expiry_date" name="expiry_date" type="date" required>
+  <label for="status">Status</label>
+  <select id="status" name="status">
+    <option value="pending" selected>Pending</option>
+    <option value="active">Active</option>
+    <option value="inactive">Inactive</option>
+    <option value="suspended">Suspended</option>
+  </select>
+  <label style="display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem;">
+    <input type="checkbox" name="monthly_renewal" value="on" checked>
+    Monthly renewal (validate on 26th)
+  </label>
+  <p style="margin-top:1rem;">
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/admin" class="btn btn-secondary">Back to list</a>
+  </p>
+</form>
+{% endblock %}

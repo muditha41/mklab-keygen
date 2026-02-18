@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Audit log — SWAPS Admin{% endblock %}
+{% block content %}
+<h1>Audit log</h1>
+<p>All validation attempts (IP, timestamp, result, error). <a href="/admin" class="btn btn-secondary">Back to dashboard</a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Time (UTC)</th>
+      <th>Application</th>
+      <th>Client</th>
+      <th>IP address</th>
+      <th>Result</th>
+      <th>Error / detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log, lic in entries %}
+    <tr>
+      <td>{{ log.validated_at.strftime('%Y-%m-%d %H:%M:%S') if log.validated_at else '—' }}</td>
+      <td><a href="/admin/licenses/{{ lic.id }}/history">{{ lic.app_name }}</a></td>
+      <td>{{ lic.client_name }}</td>
+      <td>{{ log.ip_address or '—' }}</td>
+      <td><span class="badge {% if log.result == 'success' %}badge-active{% else %}badge-inactive{% endif %}">{{ log.result }}</span></td>
+      <td>{{ log.error_reason or '—' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No validation logs yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if entries|length == limit %}
+<p><a href="/admin/audit?skip={{ skip + limit }}&limit={{ limit }}" class="btn btn-secondary">Next page</a></p>
+{% endif %}
+{% endblock %}

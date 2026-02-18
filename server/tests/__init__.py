@@ -1,0 +1,1 @@
+"""SWAPS test suite."""
